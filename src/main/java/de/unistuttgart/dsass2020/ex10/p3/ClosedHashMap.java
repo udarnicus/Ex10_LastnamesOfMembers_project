@@ -49,16 +49,42 @@ public class ClosedHashMap<V> extends AbstractHashMap<V> {
 
 	@Override
 	public boolean containsKey(Integer key) {
+		int moduloValue = key % map.length;
+		//can be infinite
+		while(map[moduloValue] != null){
+			if(map[moduloValue].getKey().equals(key)){
+				return true;
+			}
+			moduloValue = (moduloValue + jumpConstant) % map.length;
+		}
 		return false;
 	}
 
 	@Override
 	public V get(Integer key) {
+		int moduloValue = key % map.length;
+		//can be infinite
+		while(map[moduloValue] != null){
+			if(map[moduloValue].getKey().equals(key)){
+				return map[moduloValue].getValue();
+			}
+			moduloValue = (moduloValue + jumpConstant) % map.length;
+		}
 		return null;
 	}
 
 	@Override
 	public V remove(Integer key) {
+		int moduloValue = key % map.length;
+		//can be infinite
+		while(map[moduloValue] != null){
+			if(map[moduloValue].getKey().equals(key)){
+				V value = map[moduloValue].getValue();
+				map[moduloValue] = null;
+				return value;
+			}
+			moduloValue = (moduloValue + jumpConstant) % map.length;
+		}
 		return null;
 	}
 
