@@ -18,5 +18,28 @@ import de.unistuttgart.dsass2020.ex10.p3.ClosedHashMap;
 import de.unistuttgart.dsass2020.ex10.p3.AbstractHashMap.KeyValuePair;
 
 public class ClosedHashMapTest {
+    @Test
+    public void testClosedHashMap(){
+        ClosedHashMap<String> closedHashMap = new ClosedHashMap<>(13,5);
+        closedHashMap.put(5 , "5");
+        closedHashMap.put(43 , "43");
+        closedHashMap.put(18 , "18");
+        closedHashMap.put(10 , "10");
+        closedHashMap.put(108 , "108");
+        closedHashMap.put(69 , "69");
+        closedHashMap.put(58 , "58");
+        closedHashMap.put(95 , "95");
+        closedHashMap.put(101 , "101");
+
+        Iterator<KeyValuePair<String>> iterator = closedHashMap.iterator();
+        while(iterator.hasNext()){
+            System.out.println(iterator.next().getKey());
+        }
+
+
+
+
+    }
+
 
 }

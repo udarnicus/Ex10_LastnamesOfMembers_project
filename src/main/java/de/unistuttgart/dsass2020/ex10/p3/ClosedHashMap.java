@@ -90,6 +90,41 @@ public class ClosedHashMap<V> extends AbstractHashMap<V> {
 
 	@Override
 	public Iterator<KeyValuePair<V>> iterator() {
-		return null;
+		return new ClosedHashIterator();
 	}
+
+	class ClosedHashIterator implements Iterator{
+		int currentPosition;
+
+		private ClosedHashIterator(){
+			currentPosition = 0;
+		}
+
+		@Override
+		public boolean hasNext() {
+			int searchIndex = currentPosition + 1;
+			while(map[searchIndex] == null){
+				if(searchIndex == map.length -1){
+					return false;
+				}
+				searchIndex++;
+			}
+			return true;
+		}
+
+		@Override
+		public KeyValuePair<V> next() {
+			if(!hasNext()){
+				throw new IllegalStateException();
+			}
+			int searchIndex = currentPosition + 1;
+			while(map[searchIndex] == null){
+				searchIndex++;
+			}
+			currentPosition = searchIndex;
+			return map[searchIndex];
+		}
+	}
+
+
 }
