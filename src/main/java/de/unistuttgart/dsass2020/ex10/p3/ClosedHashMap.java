@@ -12,11 +12,17 @@ import java.util.NoSuchElementException;
  * {@link AbstractHashMap} and uses its array of {@link KeyValuePair} as basic
  * data structure.
  *
- * @param <V>
- *                the type of the values to be added to the HashMap
+ * @param <V> the type of the values to be added to the HashMap
+ *
+ * @author Mohamed Ben Salha, 3465244,  st167263;
+ * @author Radu Manea, 3465480, st166429;
+ * @author Lars Gillich, 3465778, st167614;
+ * @version 28.06.2020
  */
+
 public class ClosedHashMap<V> extends AbstractHashMap<V> {
 	private int jumpConstant;
+	private int elementsInMap = 0;
 
 	/**
 	 * Initializes a ClosedHashMap with the defined size and probing step size.
@@ -33,10 +39,36 @@ public class ClosedHashMap<V> extends AbstractHashMap<V> {
 		jumpConstant = c;
 	}
 
+	/**
+	 * Checks if the map is full
+	 *
+	 * @return
+	 */
+	private boolean maximumNumberOfElementsReached(){
+		return map.length == elementsInMap;
+	}
+
+
+
+	/**
+	 * Adds KeyValuePair to the map
+	 *
+	 *  CAUTION: if the size and jumping constant are poorly chosen, the while loop can run infinitely
+	 *
+	 * @param key
+	 * @param value
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
 	@Override
-	public V put(Integer key, V value) throws IllegalStateException {
+	public V put(Integer key, V value) throws IllegalArgumentException {
+		if(key == null || value == null){
+			throw new IllegalArgumentException();
+		}else if (maximumNumberOfElementsReached()){
+			throw new IllegalStateException();
+		}
+
 		int moduloValue = key % map.length;
-		//can be infinite
 		while(map[moduloValue] != null){
 			if(map[moduloValue].getKey().equals(key)){
 				return map[moduloValue].getValue();
@@ -44,9 +76,18 @@ public class ClosedHashMap<V> extends AbstractHashMap<V> {
 			moduloValue = (moduloValue + jumpConstant) % map.length;
 		}
 		map[moduloValue] = new KeyValuePair<V>(key,value);
+		elementsInMap++;
 		return null;
 	}
 
+	/**
+	 * Returns true if the given key exists in the map
+	 *
+	 *  CAUTION: if the size and jumping constant are poorly chosen, the while loop can run infinitely
+	 *
+	 * @param key
+	 * @return
+	 */
 	@Override
 	public boolean containsKey(Integer key) {
 		int moduloValue = key % map.length;
@@ -60,8 +101,19 @@ public class ClosedHashMap<V> extends AbstractHashMap<V> {
 		return false;
 	}
 
+	/**
+	 * Returns the value of the given key
+	 *
+	 *  CAUTION: if the size and jumping constant are poorly chosen, the while loop can run infinitely
+	 *
+	 * @param key
+	 * @return
+	 */
 	@Override
 	public V get(Integer key) {
+		if(!containsKey(key)){
+			throw new IllegalStateException();
+		}
 		int moduloValue = key % map.length;
 		//can be infinite
 		while(map[moduloValue] != null){
@@ -73,14 +125,35 @@ public class ClosedHashMap<V> extends AbstractHashMap<V> {
 		return null;
 	}
 
+	/** Methode to make testing easier
+	 *
+	 * @param index
+	 * @return
+	 */
+	public KeyValuePair<V> getCellValue(int index){
+		return map[index];
+	}
+
+	/**
+	 * Removes KeyValuePair if given key exists
+	 *
+	 *  CAUTION: if the size and jumping constant are poorly chosen, the while loop can run infinitely
+	 *
+	 * @param key
+	 * @return
+	 */
 	@Override
 	public V remove(Integer key) {
+		if(!containsKey(key)){
+			throw new IllegalStateException();
+		}
 		int moduloValue = key % map.length;
 		//can be infinite
 		while(map[moduloValue] != null){
 			if(map[moduloValue].getKey().equals(key)){
 				V value = map[moduloValue].getValue();
 				map[moduloValue] = null;
+				elementsInMap--;
 				return value;
 			}
 			moduloValue = (moduloValue + jumpConstant) % map.length;
@@ -88,11 +161,19 @@ public class ClosedHashMap<V> extends AbstractHashMap<V> {
 		return null;
 	}
 
+	/**
+	 * Returns ClosedHashIterator for the ClosedHashMap
+	 *
+	 * @return
+	 */
 	@Override
 	public Iterator<KeyValuePair<V>> iterator() {
 		return new ClosedHashIterator();
 	}
 
+	/**
+	 * Iterator for the ClosedHashMap
+	 */
 	class ClosedHashIterator implements Iterator{
 		int currentPosition;
 
